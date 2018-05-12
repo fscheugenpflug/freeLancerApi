@@ -13,6 +13,7 @@ const MongoStore = require("connect-mongo")(session);
 
 const index = require('./routes/index');
 const auth = require('./routes/auth');
+// const customer = require('./routes/customer');
 // const deals = require('./routes/deals');
 
 const app = express();
@@ -53,6 +54,7 @@ app.use(cookieParser());
 
 app.use('/', index);
 app.use('/auth', auth);
+// app.use('/customer', customer);
 // app.use('/deals', deals);
 
 // catch 404 and forward to error handler
