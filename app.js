@@ -1,5 +1,6 @@
 'use strict'
 
+require("dotenv").config();
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -20,16 +21,19 @@ const app = express();
 
 // -- DB
 mongoose.Promise = Promise;
-mongoose.connect("mongodb://localhost/freeLancer", {
+mongoose.connect(process.env.MONGODB_URI, {
   keepAlive: true,
   reconnectTries: Number.MAX_VALUE
 });
 
 // -- middlewares
-app.use(cors({
-  credentials: true,
-  origin: ['http://localhost:8100']
-}));
+
+app.use(
+  cors({
+    credentials: true,
+    origin: [process.env.CLIENT_URL]
+  })
+);
 
 app.use(
   session({
