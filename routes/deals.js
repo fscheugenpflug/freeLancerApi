@@ -67,15 +67,40 @@ router.get('/pending', (req, res, next) => {
     .catch(next);
 });
 
-router.get('/approved', (req, res, next) => {
+router.get('/approved/upcoming', (req, res, next) => {
   const currentId = req.session.currentUser._id
-  Deal.find(currentId)
+  Deal.findById(currentId)
     .then(result => {
-      if(result.approved === true)
-      res.json(result)
+      if(result.approved === true){
+        const currentDayAll = new Date();
+        const currentDayFormatted = currentDayAll.toISOString();
+        const currentDay = currentDayFormatted.slice(0, 10);
+        const currentTime = currentDayFormatted.slice(11, 16)
+        if (result.date >= currentDay) {
+          res.json(result)
+        }
+      }
     })
     .catch(next)
 });
+
+router.get('/approved/bygone', (req, res, next) => {
+  const currentId = req.session.currentUser._id
+  Deal.findById(currentId)
+    .then(result => {
+      if(result.approved === true){
+        const currentDayAll = new Date();
+        const currentDayFormatted = currentDayAll.toISOString();
+        const currentDay = currentDayFormatted.slice(0, 10);
+        const currentTime = currentDayFormatted.slice(11, 16)
+        if (result.date < currentDay) {
+          res.json(result)
+        }
+      }
+    })
+    .catch(next)
+});
+
 
 router.put('/pending/updatedate/:id', (req, res, next) => {
   const dealId = req.params.id
@@ -86,13 +111,17 @@ router.put('/pending/updatedate/:id', (req, res, next) => {
     .catch(next)
 });
 
-router.put('/pending/updatestatus/:id', (req, res, next) => {
-  const dealId = req.params.id
-  Deal.findByIdAndUpdate(dealId, req.body.setup)
+router.put("/pending/:id/updatestatus", (req, res, next) => {
+  const dealId = req.params.id;
+  Deal.findByIdAndUpdate(dealId, { $set: { 'accepted' : 'true' }})
     .then(result => {
-      res.status(201).json({ code: "okay" });
-    })
-    .catch(next)
+      if (result.accepted ==="true"){
+      res.status(201).json({ code: "okay" })
+    } else {
+      res.status(304).json({ code: "notmodified" })
+    };
+  })
+    .catch(next);
 });
 
 router.delete("/pending/:id", (req, res, next) => {
