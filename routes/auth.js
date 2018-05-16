@@ -15,9 +15,9 @@ router.get('/me', (req, res, next) => {
 });
 
 router.post('/login', (req, res, next) => {
-  // if (req.session.currentUser) {
-  //   return res.status(401).json({ code: 'unauthorized' });
-  // }
+  if (req.session.currentUser) {
+    return res.status(401).json({ code: 'unauthorized' });
+  }
 
   const email = req.body.email;
   const password = req.body.password;
@@ -42,9 +42,9 @@ router.post('/login', (req, res, next) => {
 });
 
 router.post('/signup', (req, res, next) => {
-  // if (req.session.currentUser) {
-  //   return res.status(401).json({ code: 'unauthorized' });
-  // }
+  if (req.session.currentUser) {
+    return res.status(401).json({ code: 'unauthorized' });
+  }
 
   const role = req.body.role;
   const name = req.body.name;
