@@ -10,8 +10,12 @@ const userSchema = new Schema({
   email: { type: String, required: true, unique: true},
   password: { type :String, required: true},
   profession: { type: Array},
-  address: { type: String},
-  telephone: { type: Number}
+  telephone: { type: Number},
+  description: { type: String},
+  street: { type: String},
+  city: { type: String},
+  postcode: { type: Number},
+  country: { type: String}
 });
 
 const User = mongoose.model("User", userSchema);

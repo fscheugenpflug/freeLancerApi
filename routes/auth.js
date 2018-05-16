@@ -92,4 +92,13 @@ router.post('/logout', (req, res) => {
   return res.status(204).send();
 });
 
+router.put('/:id/update', (req, res, next) => {
+  const userId = req.params.id
+  User.findByIdAndUpdate(userId, req.body.setup)
+  .then(result => {
+    res.status(201).json({ code: "okay" });
+  })
+  .catch(next)
+})
+
 module.exports = router;
