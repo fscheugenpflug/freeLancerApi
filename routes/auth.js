@@ -54,6 +54,31 @@ router.post('/signup', (req, res, next) => {
   const profession = req.body.profession;
   const address = req.body.address;
   const telephone = req.body.telephone;
+  
+  let icon = [];
+  if(role === 'professional') {
+
+    profession.forEach((element) => {
+      switch (element) {
+        case 'Web Developer':
+          icon.push('laptop');
+          break;
+        case 'Designer':
+          icon.push('laptop');
+          break;
+        case 'Photographer':
+          icon.push('camera');
+          break;
+        case 'Chef':
+          icon.push('nutrition');
+          break;
+        case 'Carpenter':
+          icon.push('construct');
+          break;
+      }
+    });
+  }
+
 
   if (!name || !surname || !email || !password) {
     return res.status(422).json({ code: 'validation' });
@@ -74,6 +99,7 @@ router.post('/signup', (req, res, next) => {
         surname,
         email,
         profession,
+        icon,
         address,   
         telephone, 
         password: hashPass
@@ -94,9 +120,10 @@ router.post('/logout', (req, res) => {
 
 router.put('/:id/update', (req, res, next) => {
   const userId = req.params.id
-  User.findByIdAndUpdate(userId, req.body.setup)
+  User.findByIdAndUpdate(userId, req.body.setup, {new: true})
   .then(result => {
-    res.status(201).json({ code: "okay" });
+    req.session.currentUser = result
+    res.status(201).json({ code: 'okay' });
   })
   .catch(next)
 })

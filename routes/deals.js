@@ -68,39 +68,48 @@ router.get('/pending', (req, res, next) => {
 });
 
 router.get('/approved/upcoming', (req, res, next) => {
-  const currentId = req.session.currentUser._id
-  Deal.findById(currentId)
+  const currentId = req.session.currentUser._id;
+  const data = [];
+  const currentDayAll = new Date();
+  const currentDayFormatted = currentDayAll.toISOString();
+  const currentDay = currentDayFormatted.slice(0, 10);
+  const currentTime = currentDayFormatted.slice(11, 16);
+  Deal.find({$or: [{ customerId: currentId }, { professionalId: currentId }]})
     .then(result => {
-      if(result.approved === true){
-        const currentDayAll = new Date();
-        const currentDayFormatted = currentDayAll.toISOString();
-        const currentDay = currentDayFormatted.slice(0, 10);
-        const currentTime = currentDayFormatted.slice(11, 16)
-        if (result.date >= currentDay) {
-          res.json(result)
-        }
-      }
+      result.forEach((item) => {
+        if (item.accepted === true) {
+          if (item.date >= currentDay) {
+            if (item._doc.time >= currentTime) {
+              data.push(item);
+            }
+          }
+        };
+      })
+      res.json(data);
     })
-    .catch(next)
+    .catch(next);
 });
 
 router.get('/approved/bygone', (req, res, next) => {
-  const currentId = req.session.currentUser._id
-  Deal.findById(currentId)
+  const currentId = req.session.currentUser._id;
+  const data = [];
+  const currentDayAll = new Date();
+  const currentDayFormatted = currentDayAll.toISOString();
+  const currentDay = currentDayFormatted.slice(0, 10);
+  const currentTime = currentDayFormatted.slice(11, 16);
+  Deal.find({$or: [{ customerId: currentId }, { professionalId: currentId }]})
     .then(result => {
-      if(result.approved === true){
-        const currentDayAll = new Date();
-        const currentDayFormatted = currentDayAll.toISOString();
-        const currentDay = currentDayFormatted.slice(0, 10);
-        const currentTime = currentDayFormatted.slice(11, 16)
-        if (result.date < currentDay) {
-          res.json(result)
-        }
-      }
+      result.forEach((item) => {
+        if (item.accepted === true) {
+          if (item.date < currentDay) {
+            data.push(item);
+          }
+        };
+      })
+      res.json(data);
     })
-    .catch(next)
+    .catch(next);
 });
-
 
 router.put('/pending/updatedate/:id', (req, res, next) => {
   const dealId = req.params.id
@@ -121,6 +130,18 @@ router.put("/pending/:id/updatestatus", (req, res, next) => {
       res.status(304).json({ code: "notmodified" })
     };
   })
+    .catch(next);
+});
+router.put("/pending/:id/updatedate", (req, res, next) => {
+  const dealId = req.params.id;
+  Deal.findByIdAndUpdate(dealId, req.body.setup)
+    .then(result => {
+      if (result) {
+        res.status(201).json({ code: "okay" });
+      } else {
+        res.status(304).json({ code: "notmodified" });
+      }
+    })
     .catch(next);
 });
 

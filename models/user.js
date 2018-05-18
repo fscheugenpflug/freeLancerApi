@@ -15,7 +15,8 @@ const userSchema = new Schema({
   street: { type: String},
   city: { type: String},
   postcode: { type: Number},
-  country: { type: String}
+  country: { type: String},
+  icon: { type: Array},
 });
 
 const User = mongoose.model("User", userSchema);
